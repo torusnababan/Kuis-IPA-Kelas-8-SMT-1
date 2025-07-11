@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis IPA (Gaya, Gerak, Usaha & Tekanan)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: auto;
+            position: relative;
+        }
+        .header-main-title {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        h1 {
+            color: #0056b3;
+            margin: 0;
+            font-size: 2em;
+        }
+        .author-info {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        .author-info p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .author-info p:first-child {
+            font-weight: bold;
+            color: #333;
+            font-size: 1em;
+        }
+        .header-image {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #0056b3;
+            z-index: 10;
+        }
+        .left-header-image {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #0056b3;
+            z-index: 10;
+        }
+        h2 {
+            color: #0056b3;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .question {
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .question p {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d9534f;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+        #timeLimitDisplay {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 5px;
+            margin-top: 50px;
+        }
+        #results {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #e9ecef;
+            display: none;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .cooldown-message {
+            text-align: center;
+            font-size: 1.2em;
+            color: #d9534f;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #d9534f;
+            border-radius: 5px;
+            background-color: #ffe0e0;
+        }
+        @media (max-width: 600px) {
+            .header-image, .left-header-image {
+                position: static;
+                margin: 10px auto;
+                display: block;
+            }
+            .header-main-title, .author-info {
+                text-align: center;
+            }
+            .container {
+                position: static;
+            }
+            #timeLimitDisplay {
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-main-title">
+            <h1>Kuis IPA</h1>
+        </div>
+        <div class="author-info">
+            <p>By. Torus Manuntun Nababan, S.Pd.,M.Pd</p>
+            <p>(Pengembang Soal Kuis)</p>
+        </div>
+        <img src="logo.png" alt="Foto Torus Manuntun Nababan, S.Pd.,M.Pd" class="header-image">
+        <img src="jas.jpg" alt="Ilustrasi Jas" class="left-header-image">
+
+        <p id="timeLimitDisplay">Waktu pengerjaan: <span id="timeLimit">30</span> menit</p>
+        <div id="timer">Waktu tersisa: 30:00</div>
+
+        <form id="quizForm">
+            <h2>Identitas Siswa</h2>
+            <div class="form-group">
+                <label for="sekolah">Nama Sekolah:</label>
+                <input type="text" id="sekolah" name="sekolah" required>
+            </div>
+            <div class="form-group">
+                <label for="nama">Nama Siswa:</label>
+                <input type="text" id="nama" name="nama" required>
+            </div>
+            <div class="form-group">
+                <label for="kelas">Kelas:</label>
+                <input type="text" id="kelas" name="kelas" required>
+            </div>
+            <div class="form-group">
+                <label for="semester">Semester:</label>
+                <select id="semester" name="semester" required>
+                    <option value="">Pilih Semester</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tahunAjaran">Tahun Ajaran:</label>
+                <input type="text" id="tahunAjaran" name="tahunAjaran" placeholder="Contoh: 2024/2025" required>
+            </div>
+
+            <hr>
+
+            <h2>Soal Kuis</h2>
+            <div id="questionsContainer">
+            </div>
+
+            <button type="submit">Selesai Kuis</button>
+        </form>
+
+        <div id="results">
+            <h2>Hasil Kuis</h2>
+            <p><strong>Nama Siswa:</strong> <span id="resultNama"></span></p>
+            <p><strong>Skor Anda:</strong> <span id="score"></span></p>
+            <p id="message"></p>
+            <h3>Detail Jawaban:</h3>
+            <div id="answerDetails">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Gaya gesek, pegas, gravitasi (6 soal)
+            {
+                topic: "Gaya Gesek",
+                question: "Gaya yang menghambat gerakan benda saat dua permukaan saling bersentuhan adalah gaya...",
+                options: ["gravitasi", "pegas", "gesek", "normal"],
+                answer: "gesek"
+            },
+            {
+                topic: "Gaya Gravitasi",
+                question: "Gaya yang menyebabkan benda jatuh ke permukaan bumi adalah gaya...",
+                options: ["gesek", "magnet", "gravitasi", "listrik"],
+                answer: "gravitasi"
+            },
+            {
+                topic: "Gaya Pegas",
+                question: "Gaya yang terjadi pada benda yang dapat meregang atau memampat (seperti karet atau per) disebut gaya...",
+                options: ["gravitasi", "gesek", "pegas", "normal"],
+                answer: "pegas"
+            },
+            {
+                topic: "Pengaruh Gaya",
+                question: "Permukaan jalan yang kasar biasanya memiliki gaya gesek yang...",
+                options: ["lebih kecil", "lebih besar", "nol", "sama"],
+                answer: "lebih besar"
+            },
+            {
+                topic: "Gaya Gravitasi",
+                question: "Jika Anda melempar bola ke atas, bola tersebut akan kembali jatuh karena pengaruh...",
+                options: ["gaya dorong", "gaya pegas", "gaya gravitasi", "gaya gesek"],
+                answer: "gaya gravitasi"
+            },
+            {
+                topic: "Gaya Gesek",
+                question: "Gaya gesek pada ban kendaraan di jalan yang basah biasanya...",
+                options: ["lebih besar", "lebih kecil", "sama", "tidak ada"],
+                answer: "lebih kecil"
+            },
+
+            // Sistem gerak manusia dan hewan (5 soal)
+            {
+                topic: "Sistem Gerak Manusia",
+                question: "Tulang, otot, dan sendi adalah bagian dari sistem...",
+                options: ["pencernaan", "pernapasan", "peredaran darah", "gerak"],
+                answer: "gerak"
+            },
+            {
+                topic: "Sistem Gerak Manusia",
+                question: "Alat gerak aktif pada manusia adalah...",
+                options: ["tulang", "otot", "sendi", "tulang rawan"],
+                answer: "otot"
+            },
+            {
+                topic: "Sistem Gerak Hewan",
+                question: "Hewan yang bergerak dengan sayap, seperti burung, menggunakan alat gerak yang disesuaikan dengan habitat...",
+                options: ["darat", "air", "udara", "tanah"],
+                answer: "udara"
+            },
+            {
+                topic: "Sistem Gerak Manusia",
+                question: "Sendi yang memungkinkan gerakan ke segala arah, seperti pada bahu, disebut sendi...",
+                options: ["engsel", "pelana", "putaran", "peluru"],
+                answer: "peluru"
+            },
+            {
+                topic: "Sistem Gerak Hewan",
+                question: "Ikan bergerak di air menggunakan...",
+                options: ["kaki", "sirip dan ekor", "sayap", "otot"],
+                answer: "sirip dan ekor"
+            },
+
+            // Usaha, energi, dan daya (4 soal)
+            {
+                topic: "Usaha",
+                question: "Usaha dalam fisika terjadi jika ada gaya yang diberikan pada benda dan benda tersebut mengalami...",
+                options: ["perubahan bentuk", "perubahan warna", "perpindahan", "perubahan suhu"],
+                answer: "perpindahan"
+            },
+            {
+                topic: "Energi",
+                question: "Kemampuan untuk melakukan usaha disebut...",
+                options: ["gaya", "daya", "energi", "tekanan"],
+                answer: "energi"
+            },
+            {
+                topic: "Daya",
+                question: "Besarnya usaha yang dilakukan per satuan waktu disebut...",
+                options: ["energi", "gaya", "daya", "usaha"],
+                answer: "daya"
+            },
+            {
+                topic: "Usaha dan Energi",
+                question: "Satuan SI untuk usaha dan energi adalah...",
+                options: ["Watt (W)", "Newton (N)", "Joule (J)", "Pascal (Pa)"],
+                answer: "Joule (J)"
+            },
+
+            // Jenis-jenis pesawat sederhana (5 soal)
+            {
+                topic: "Pesawat Sederhana",
+                question: "Alat yang digunakan untuk memudahkan pekerjaan manusia dengan mengubah arah atau besarnya gaya disebut...",
+                options: ["mesin", "pesawat sederhana", "alat berat", "roda"],
+                answer: "pesawat sederhana"
+            },
+            {
+                topic: "Tuas",
+                question: "Alat yang berfungsi sebagai pengungkit untuk mengangkat atau memindahkan beban adalah...",
+                options: ["katrol", "roda berporos", "bidang miring", "tuas (pengungkit)"],
+                answer: "tuas (pengungkit)"
+            },
+            {
+                topic: "Pesawat Sederhana",
+                question: "Contoh dari bidang miring adalah...",
+                options: ["gunting", "tangga", "sekop", "katrol sumur"],
+                answer: "tangga"
+            },
+            {
+                topic: "Katrol",
+                question: "Alat yang digunakan untuk menarik atau mengangkat beban ke atas menggunakan tali adalah...",
+                options: ["tuas", "roda", "katrol", "bidang miring"],
+                answer: "katrol"
+            },
+            {
+                topic: "Roda Berporos",
+                question: "Setir mobil dan roda sepeda adalah contoh dari...",
+                options: ["bidang miring", "katrol", "roda berporos", "tuas"],
+                answer: "roda berporos"
+            },
+
+            // Tekanan zat padat, cair, dan gas (5 soal)
+            {
+                topic: "Tekanan Zat Padat",
+                question: "Tekanan pada zat padat dipengaruhi oleh gaya (berat) dan...",
+                options: ["volume", "luas permukaan", "ketinggian", "suhu"],
+                answer: "luas permukaan"
+            },
+            {
+                topic: "Tekanan Zat Cair",
+                question: "Tekanan dalam zat cair (hidrostatik) dipengaruhi oleh kedalaman dan...",
+                options: ["suhu", "volume", "luas permukaan", "massa jenis cairan"],
+                answer: "massa jenis cairan"
+            },
+            {
+                topic: "Tekanan Zat Gas",
+                question: "Udara di atmosfer memberikan tekanan yang disebut tekanan...",
+                options: ["hidrostatis", "udara", "atmosfer", "pascal"],
+                answer: "atmosfer"
+            },
+            {
+                topic: "Tekanan Zat Cair",
+                question: "Semakin dalam suatu benda berada dalam air, tekanan yang dialami benda tersebut akan...",
+                options: ["semakin kecil", "semakin besar", "tetap", "berubah-ubah"],
+                answer: "semakin besar"
+            },
+            {
+                topic: "Tekanan",
+                question: "Satuan SI untuk tekanan adalah...",
+                options: ["Joule (J)", "Newton (N)", "Pascal (Pa)", "Watt (W)"],
+                answer: "Pascal (Pa)"
+            },
+
+            // Prinsip Pascal dan Archimedes (5 soal)
+            {
+                topic: "Prinsip Pascal",
+                question: "Prinsip Pascal menyatakan bahwa tekanan yang diberikan pada fluida tertutup akan diteruskan ke...",
+                options: ["arah yang berlawanan", "segala arah dengan sama rata", "benda padat saja", "permukaan atas saja"],
+                answer: "segala arah dengan sama rata"
+            },
+            {
+                topic: "Prinsip Pascal",
+                question: "Contoh aplikasi Prinsip Pascal adalah...",
+                options: ["kapal selam", "dongkrak hidrolik", "balon udara", "pesawat terbang"],
+                answer: "dongkrak hidrolik"
+            },
+            {
+                topic: "Prinsip Archimedes",
+                question: "Prinsip Archimedes menjelaskan tentang gaya apung (buoyancy) yang dialami benda saat...",
+                options: ["jatuh bebas", "berada di udara", "tenggelam atau mengapung di fluida", "bergerak di permukaan tanah"],
+                answer: "tenggelam atau mengapung di fluida"
+            },
+            {
+                topic: "Prinsip Archimedes",
+                question: "Sebuah benda akan mengapung jika gaya apungnya...",
+                options: ["lebih kecil dari berat benda", "sama dengan berat benda", "lebih besar dari berat benda", "nol"],
+                answer: "lebih besar dari berat benda"
+            },
+            {
+                topic: "Prinsip Archimedes",
+                question: "Contoh aplikasi Prinsip Archimedes adalah...",
+                options: ["pompa air", "rem hidrolik", "kapal laut", "termometer"],
+                answer: "kapal laut"
+            }
+        ];
+
+        const timeLimitInMinutes = 30; 
+        let timeLeft = timeLimitInMinutes * 60; // seconds
+        let timerInterval;
+
+        const quizForm = document.getElementById('quizForm');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const timerDisplay = document.getElementById('timer');
+        const resultsDiv = document.getElementById('results');
+        const resultNama = document.getElementById('resultNama');
+        const scoreDisplay = document.getElementById('score');
+        const messageDisplay = document.getElementById('message');
+        const answerDetailsDiv = document.getElementById('answerDetails');
+
+        // Durasi cooldown: 1 jam dalam milidetik
+        const cooldownDuration = 60 * 60 * 1000;
+        const lastQuizCompletionKey = 'lastQuizCompletionTime';
+
+        // Fungsi untuk mengacak array (algoritma Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Fungsi untuk menghasilkan dan menampilkan pertanyaan
+        function generateQuestions() {
+            shuffleArray(questions);
+            questionsContainer.innerHTML = '';
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+
+                const shuffledOptions = [...q.options];
+                shuffleArray(shuffledOptions);
+
+                questionDiv.innerHTML = `
+                    <p>${index + 1}. ${q.question}</p>
+                    <div class="options">
+                        ${shuffledOptions.map((option) => `
+                            <label>
+                                <input type="radio" name="q${index}" value="${option}"> ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                questionsContainer.appendChild(questionDiv);
+            });
+        }
+
+        // Fungsi untuk memulai timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `Waktu tersisa: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu habis! Kuis akan otomatis disubmit.");
+                    quizForm.dispatchEvent(new Event('submit'));
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Penanganan saat formulir disubmit
+        quizForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            clearInterval(timerInterval);
+
+            let totalScore = 0;
+            const pointsPerCorrect = 3; 
+            const maxPossibleScore = questions.length * pointsPerCorrect;
+
+            const answers = {};
+
+            questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                const userAnswer = selectedOption ? selectedOption.value : null;
+                answers[`q${index}`] = userAnswer;
+
+                if (userAnswer === q.answer) {
+                    totalScore += pointsPerCorrect;
+                }
+            });
+
+            localStorage.setItem(lastQuizCompletionKey, Date.now());
+
+            // Tampilkan hasil
+            resultNama.textContent = document.getElementById('nama').value;
+            scoreDisplay.textContent = `${totalScore} / ${maxPossibleScore}`;
+
+            // Tentukan pesan berdasarkan skor (kriteria 70%)
+            if (totalScore >= (0.70 * maxPossibleScore)) {
+                messageDisplay.textContent = "Selamat Anda Pemenang";
+                messageDisplay.style.color = "green";
+            } else {
+                messageDisplay.textContent = "Anda Belum Beruntung, Belajar Lagi Ya";
+                messageDisplay.style.color = "red";
+            }
+
+            // Tampilkan detail jawaban
+            answerDetailsDiv.innerHTML = '';
+            questions.forEach((q, index) => {
+                const userAnswer = answers[`q${index}`];
+                const detailDiv = document.createElement('p');
+                let answerStatusClass = '';
+                let userAnswerText = userAnswer !== null ? userAnswer : 'Tidak dijawab';
+
+                if (userAnswer === q.answer) {
+                    answerStatusClass = 'correct';
+                } else if (userAnswer !== null) {
+                    answerStatusClass = 'incorrect';
+                } else {
+                    answerStatusClass = '';
+                }
+
+                detailDiv.innerHTML = `
+                    <strong>${index + 1}. ${q.question}</strong><br>
+                    Jawaban Anda: <span class="${answerStatusClass}">
+                        ${userAnswerText}
+                    </span><br>
+                    Kunci Jawaban: <span class="correct">${q.answer}</span>
+                `;
+                answerDetailsDiv.appendChild(detailDiv);
+            });
+
+            quizForm.style.display = 'none';
+            resultsDiv.style.display = 'block';
+        });
+
+        // Inisialisasi kuis dan cek cooldown saat halaman dimuat
+        window.onload = function() {
+            const lastCompletionTime = localStorage.getItem(lastQuizCompletionKey);
+            if (lastCompletionTime) {
+                const timeElapsed = Date.now() - parseInt(lastCompletionTime);
+                if (timeElapsed < cooldownDuration) {
+                    const remainingTime = cooldownDuration - timeElapsed;
+                    const minutes = Math.floor(remainingTime / (1000 * 60));
+                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+                    quizForm.style.display = 'none';
+                    timerDisplay.style.display = 'none';
+                    document.getElementById('timeLimitDisplay').style.display = 'none';
+                    const cooldownMessageDiv = document.createElement('div');
+                    cooldownMessageDiv.classList.add('cooldown-message');
+                    cooldownMessageDiv.innerHTML = `
+                        Anda telah menyelesaikan kuis ini. <br>
+                        Silakan coba lagi dalam **${minutes.toString().padStart(2, '0')} menit dan ${seconds.toString().padStart(2, '0')} detik**.
+                    `;
+                    document.querySelector('.container').insertBefore(cooldownMessageDiv, document.getElementById('quizForm'));
+                    return;
+                }
+            }
+            // Jika tidak ada cooldown atau cooldown sudah berakhir, inisialisasi kuis
+            generateQuestions();
+            startTimer();
+        };
+    </script>
+</body>
+</html>
